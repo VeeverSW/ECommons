@@ -91,23 +91,23 @@ public class InternalLog
         ImGui.Checkbox("##Autoscroll", ref Autoscroll);
         ImGuiEx.Tooltip("Autoscroll");
         ImGui.SameLine();
-        if(ImGui.Button("Copy all"))
+        if(ImGui.Button("复制全部"))
         {
 #pragma warning disable
             GenericHelpers.Copy(Messages.Where(x => x.Level >= SelectedLevel).Select(x => $"[{x.Level}@{x.Time}] {x.Message}").Join("\n"));
 #pragma warning restore
         }
         ImGui.SameLine();
-        if(ImGui.Button("Clear"))
+        if(ImGui.Button("清空"))
         {
             Messages.Clear();
         }
         ImGui.SameLine();
         ImGuiEx.SetNextItemFullWidth(-30);
-        ImGui.InputTextWithHint("##Filter", "Filter...", ref Search, 100);
+        ImGui.InputTextWithHint("##Filter", "搜索...", ref Search, 100);
         ImGui.SameLine();
         if(ImGuiEx.IconButton(Dalamud.Interface.FontAwesomeIcon.Filter, "##LogFilter")) ImGui.OpenPopup("filter_window");
-        ImGuiEx.Tooltip("Log Filter");
+        ImGuiEx.Tooltip("筛选");
 
         if(ImGui.BeginPopup("filter_window", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.Popup))
         {

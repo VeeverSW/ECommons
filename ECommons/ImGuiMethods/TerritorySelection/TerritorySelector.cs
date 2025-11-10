@@ -17,20 +17,20 @@ namespace ECommons.ImGuiMethods.TerritorySelection;
 
 public unsafe class TerritorySelector : Window
 {
-    public enum Category { World, Housing, Inn, Dungeon, Raid, Trial, Deep_Dungeon, Other, All }
+    public enum Category { 世界, 房区, 旅馆, 迷宫挑战, 大型任务, 讨伐歼灭战, 深层迷宫, 其他, 所有区域 }
     public enum Column { ID, Zone, Region, IntendedUse }
     public enum DisplayMode { PlaceNameDutyUnion, PlaceNameAndDuty, PlaceNameOnly }
 
     public static bool Singleton = true;
     public static Dictionary<Category, TerritoryIntendedUseEnum[]> Categories = new()
     {
-        [Category.World] = [TerritoryIntendedUseEnum.City_Area, TerritoryIntendedUseEnum.Open_World,],
-        [Category.Housing] = [TerritoryIntendedUseEnum.Housing_Instances, TerritoryIntendedUseEnum.Residential_Area,],
-        [Category.Inn] = [TerritoryIntendedUseEnum.Inn,],
-        [Category.Dungeon] = [TerritoryIntendedUseEnum.Dungeon, TerritoryIntendedUseEnum.Variant_Dungeon, TerritoryIntendedUseEnum.Criterion_Duty, TerritoryIntendedUseEnum.Criterion_Savage_Duty,],
-        [Category.Raid] = [TerritoryIntendedUseEnum.Raid, TerritoryIntendedUseEnum.Raid_2, TerritoryIntendedUseEnum.Alliance_Raid, TerritoryIntendedUseEnum.Large_Scale_Raid, TerritoryIntendedUseEnum.Large_Scale_Savage_Raid,],
-        [Category.Trial] = [TerritoryIntendedUseEnum.Trial],
-        [Category.Deep_Dungeon] = [TerritoryIntendedUseEnum.Deep_Dungeon],
+        [Category.世界] = [TerritoryIntendedUseEnum.City_Area, TerritoryIntendedUseEnum.Open_World,],
+        [Category.房区] = [TerritoryIntendedUseEnum.Housing_Instances, TerritoryIntendedUseEnum.Residential_Area,],
+        [Category.旅馆] = [TerritoryIntendedUseEnum.Inn,],
+        [Category.迷宫挑战] = [TerritoryIntendedUseEnum.Dungeon, TerritoryIntendedUseEnum.Variant_Dungeon, TerritoryIntendedUseEnum.Criterion_Duty, TerritoryIntendedUseEnum.Criterion_Savage_Duty,],
+        [Category.大型任务] = [TerritoryIntendedUseEnum.Raid, TerritoryIntendedUseEnum.Raid_2, TerritoryIntendedUseEnum.Alliance_Raid, TerritoryIntendedUseEnum.Large_Scale_Raid, TerritoryIntendedUseEnum.Large_Scale_Savage_Raid,],
+        [Category.讨伐歼灭战] = [TerritoryIntendedUseEnum.Trial],
+        [Category.深层迷宫] = [TerritoryIntendedUseEnum.Deep_Dungeon],
     };
     public static readonly List<TerritorySelector> Selectors = [];
     private readonly Dictionary<Category, List<TerritoryType>> Cache = [];
@@ -119,25 +119,25 @@ public unsafe class TerritorySelector : Window
                 }
             }
         }
-        if(!HiddenCategories.Contains(Category.Other))
+        if(!HiddenCategories.Contains(Category.其他))
         {
-            Cache[Category.Other] = [];
+            Cache[Category.其他] = [];
             foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
                 if(!Cache.Values.Any(c => c.Any(z => z.RowId == x.RowId)) && x.PlaceName.ValueNullable?.Name.GetText().IsNullOrEmpty() == false)
                 {
-                    Cache[Category.Other].Add(x);
+                    Cache[Category.其他].Add(x);
                 }
             }
         }
-        if(!HiddenCategories.Contains(Category.All))
+        if(!HiddenCategories.Contains(Category.所有区域))
         {
-            Cache[Category.All] = [];
+            Cache[Category.所有区域] = [];
             foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>().Where(x => !HiddenTerritories.Contains(x.RowId)))
             {
                 if(x.PlaceName.ValueNullable?.Name.GetText().IsNullOrEmpty() == false)
                 {
-                    Cache[Category.All].Add(x);
+                    Cache[Category.所有区域].Add(x);
                 }
             }
         }
@@ -160,11 +160,11 @@ public unsafe class TerritorySelector : Window
                 if(ImGui.BeginTabItem(x.Key.ToString(), SelectedCategory == x.Key ? ImGuiTabItemFlags.SetSelected : ImGuiTabItemFlags.None))
                 {
                     ImGui.SetNextItemWidth(200f);
-                    ImGui.InputTextWithHint($"##search", "Filter...", ref Filter, 50);
+                    ImGui.InputTextWithHint($"##search", "搜索...", ref Filter, 50);
                     ImGui.SameLine();
-                    ImGui.Checkbox("Only selected", ref OnlySelected);
+                    ImGui.Checkbox("仅显示已选择区域", ref OnlySelected);
                     ImGui.SameLine();
-                    ImGui.Checkbox("Show unnamed", ref ShowUnnamed);
+                    ImGui.Checkbox("显示无名区域", ref ShowUnnamed);
                     if(Player.Available)
                     {
                         ImGui.SameLine();
@@ -194,7 +194,7 @@ public unsafe class TerritorySelector : Window
                         }
                         else
                         {
-                            if(ImGui.RadioButton($"Current zone: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", SelectedTerritory == Svc.ClientState.TerritoryType))
+                            if(ImGui.RadioButton($"当前区域: {ExcelTerritoryHelper.GetName(Svc.ClientState.TerritoryType)}", SelectedTerritory == Svc.ClientState.TerritoryType))
                             {
                                 SelectedTerritory = Svc.ClientState.TerritoryType;
                                 try
@@ -217,20 +217,20 @@ public unsafe class TerritorySelector : Window
                             if(ExtraColumns.Contains(Column.ID)) ImGui.TableSetupColumn("ID");
                             if(Mode == DisplayMode.PlaceNameDutyUnion)
                             {
-                                ImGui.TableSetupColumn("Place Name/Duty", ImGuiTableColumnFlags.WidthStretch);
+                                ImGui.TableSetupColumn("位置名/副本名", ImGuiTableColumnFlags.WidthStretch);
                             }
                             else if(Mode == DisplayMode.PlaceNameOnly)
                             {
-                                ImGui.TableSetupColumn("Place Name", ImGuiTableColumnFlags.WidthStretch);
+                                ImGui.TableSetupColumn("位置名", ImGuiTableColumnFlags.WidthStretch);
                             }
                             else
                             {
-                                ImGui.TableSetupColumn("Place Name", ImGuiTableColumnFlags.WidthStretch);
-                                ImGui.TableSetupColumn("Duty");
+                                ImGui.TableSetupColumn("位置名", ImGuiTableColumnFlags.WidthStretch);
+                                ImGui.TableSetupColumn("副本名");
                             }
-                            if(ExtraColumns.Contains(Column.Zone)) ImGui.TableSetupColumn("Zone");
-                            if(ExtraColumns.Contains(Column.Region)) ImGui.TableSetupColumn("Region");
-                            if(ExtraColumns.Contains(Column.IntendedUse)) ImGui.TableSetupColumn("Intended use");
+                            if(ExtraColumns.Contains(Column.Zone)) ImGui.TableSetupColumn("区域");
+                            if(ExtraColumns.Contains(Column.Region)) ImGui.TableSetupColumn("地区");
+                            if(ExtraColumns.Contains(Column.IntendedUse)) ImGui.TableSetupColumn("区域类型");
 
                             ImGui.TableHeadersRow();
 
